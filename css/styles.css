@@ -42,12 +42,29 @@
   padding: 0;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--color-bg-dark);
   color: var(--color-text);
   line-height: 1.6;
   overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Defensa: nada se sale del viewport */
+img, video, iframe, embed, object {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+iframe {
+  max-width: 100%;
 }
 
 h1, h2, h3, h4 {
@@ -2110,6 +2127,97 @@ input, textarea, select {
   }
 }
 
+/* ═══════════════════════════════════════════════════════
+ * MOBILE — defensas extras: forzar 1 columna, evitar overflow
+ * ═══════════════════════════════════════════════════════ */
+@media (max-width: 720px) {
+  /* Hero — más compacto vertical */
+  .hero {
+    padding-bottom: 5rem;
+  }
+
+  /* Forzar 1 columna en TODAS las cuadrículas que podrían apretarse */
+  .value-grid,
+  .lifestyle-grid,
+  .investment-bullets,
+  .poi-grid,
+  .testimonials-grid,
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* UPeU stats: 2 columnas (no 4) */
+  .upeu-feature__stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  /* ROI calc: 1 columna de inputs y de results */
+  .roi-calc__inputs,
+  .roi-calc__results {
+    grid-template-columns: 1fr;
+  }
+
+  /* Galería: thumbnails más chicos y limitar gallery height */
+  .gallery-main {
+    aspect-ratio: 4 / 3;
+  }
+  .thumbnail {
+    flex: 0 0 70px;
+    height: 50px;
+  }
+
+  /* Video: ratio más cómodo en mobile */
+  .video-wrapper {
+    aspect-ratio: 9 / 16;
+    max-height: 70vh;
+    max-height: 70svh;
+  }
+  .video-wrapper video {
+    object-fit: cover;
+  }
+
+  /* Section title más compacto */
+  .section-title {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+  }
+
+  /* Section intro más compacto */
+  .section__intro {
+    font-size: 0.95rem;
+  }
+
+  /* Owner letter: full-width text */
+  .owner-letter__body p {
+    font-size: 1rem;
+  }
+
+  /* Activity strip stacks gracefully */
+  .activity-strip {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  /* Footer: better stacked layout */
+  .footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* Closing block tighter */
+  .closing__title {
+    font-size: clamp(1.7rem, 6.5vw, 2.4rem);
+  }
+
+  /* Skip-link offset for safe area */
+  .skip-link:focus {
+    top: calc(0.5rem + env(safe-area-inset-top));
+  }
+}
+
 /* iPhone SE / very narrow */
 @media (max-width: 380px) {
   .header__logo { font-size: 0.9rem; }
@@ -2120,4 +2228,9 @@ input, textarea, select {
   }
   .hero__badge { font-size: 0.6rem; padding: 0.35rem 0.65rem; }
   .hero__title { font-size: clamp(2rem, 12vw, 2.6rem); }
+
+  /* UPeU: 1 columna en stats */
+  .upeu-feature__stats {
+    grid-template-columns: 1fr;
+  }
 }
