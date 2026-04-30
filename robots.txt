@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /FOTOS/
+Disallow: /assets/docs/
+
+Sitemap: https://chaclacayo.example.com/sitemap.xml

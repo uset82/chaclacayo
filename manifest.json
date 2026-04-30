@@ -1,0 +1,17 @@
+{
+  "name": "Chaclacayo — Carlos Carpio",
+  "short_name": "Chaclacayo",
+  "description": "Propiedad exclusiva en Chaclacayo, Lima. Venta directa por su dueño.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0A0F0D",
+  "theme_color": "#0A0F0D",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%231B4332'/%3E%3Ctext x='50%25' y='62%25' text-anchor='middle' font-family='Georgia, serif' font-size='110' font-weight='700' fill='%23D4A843'%3EC%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
