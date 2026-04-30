@@ -621,7 +621,7 @@ img, video {
 @media (max-width: 900px) {
   .header__nav-links {
     position: fixed;
-    inset: calc(64px + env(safe-area-inset-top)) 0 auto 0;
+    inset: calc(64px + env(safe-area-inset-top, 0px)) 0 auto 0;
     flex-direction: column;
     gap: 0.5rem;
     background: rgba(10, 15, 13, 0.97);
@@ -1975,22 +1975,29 @@ input, textarea, select {
     padding: 0 1rem;
   }
   .header {
+    /* Garantizamos un mínimo de 0.75rem aunque env() no esté soportado,
+       y respetamos el notch del iPhone cuando viewport-fit=cover está activo */
     padding: 0.75rem 0;
-    padding-top: calc(0.75rem + env(safe-area-inset-top));
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
   }
   .header__inner {
     gap: 0.5rem;
+    min-height: 36px; /* impide que el logo quede más alto que el contenedor flex */
   }
   .header__logo {
     font-size: 1rem;
     flex-shrink: 1;
     min-width: 0;
+    line-height: 1.4;
   }
   .header__logo a {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: block;
+    display: inline-block; /* inline-block evita el clipping de ascendentes que sufría display:block */
+    line-height: 1.5; /* deja aire arriba para los ascendentes de Playfair Display */
+    padding-block: 2px; /* margen interno para que ningún glifo toque el borde superior */
+    max-width: 100%;
   }
   .header__nav {
     gap: 0.65rem;
@@ -2012,7 +2019,7 @@ input, textarea, select {
   .hero {
     min-height: 100vh;
     min-height: 100svh;
-    padding-top: calc(72px + env(safe-area-inset-top));
+    padding-top: calc(72px + env(safe-area-inset-top, 0px));
     padding-bottom: 6.5rem;
   }
   .hero__bg {
@@ -2061,7 +2068,7 @@ input, textarea, select {
 
   /* Floating WhatsApp — keep clear of safe areas */
   .fab-whatsapp {
-    bottom: calc(20px + env(safe-area-inset-bottom));
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     right: 16px;
     width: 52px;
     height: 52px;
@@ -2214,7 +2221,7 @@ input, textarea, select {
 
   /* Skip-link offset for safe area */
   .skip-link:focus {
-    top: calc(0.5rem + env(safe-area-inset-top));
+    top: calc(0.5rem + env(safe-area-inset-top, 0px));
   }
 }
 
