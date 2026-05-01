@@ -24,12 +24,15 @@ const OPENROUTER_URL  = "https://openrouter.ai/api/v1/chat/completions";
 // users were seeing. We pin to specific free models that exist in the live
 // OpenRouter catalog and fall back automatically if any single one rejects
 // the call. Catalog reference: GET https://openrouter.ai/api/v1/models.
+// Models in this list MUST accept the OpenAI-style "system" role.
+// Google Gemma family is excluded because Google AI Studio rejects the
+// "system" role with 400 "Developer instruction is not enabled".
 const DEFAULT_MODEL: string = "nvidia/nemotron-3-nano-30b-a3b:free";
 const DEFAULT_FALLBACKS: string[] = [
-  "google/gemma-3-27b-it:free",
-  "qwen/qwen3-next-80b-a3b-instruct:free",
   "openai/gpt-oss-20b:free",
+  "qwen/qwen3-next-80b-a3b-instruct:free",
   "meta-llama/llama-3.2-3b-instruct:free",
+  "nvidia/nemotron-nano-9b-v2:free",
   "openrouter/free", // last resort: random free model
 ];
 
@@ -40,10 +43,14 @@ const REQUEST_TIMEOUT = 25_000;
 // HTTP statuses where switching to a fallback model is worth trying.
 // 401/403 are auth issues — same key everywhere, fallback won't help.
 // 404 means the model id no longer exists / has no providers — try next.
+// 400 is included because most upstream 400s are model-specific (e.g.
+// "system role not supported", "tool calls not enabled") — another model
+// will likely accept the same payload, so try the next candidate.
 function isRetryableUpstreamStatus(status: number): boolean {
-  return status === 404 || status === 408 || status === 409
-      || status === 425 || status === 429 || status === 500
-      || status === 502 || status === 503 || status === 504;
+  return status === 400 || status === 404 || status === 408
+      || status === 409 || status === 425 || status === 429
+      || status === 500 || status === 502 || status === 503
+      || status === 504;
 }
 
 const PROPERTY_FACTS = `
