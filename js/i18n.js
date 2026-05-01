@@ -10,7 +10,9 @@ const translations = {
     nav_location: "Ubicación",
     nav_investment: "Inversión",
     nav_faq: "FAQ",
+    nav_comments: "Comentarios",
     nav_contact: "Contacto",
+    header_brand: "Oportunidad de Inversión en Chaclacayo",
 
     // SEO
     seo_title: "Casa Multi-Unidad en Chaclacayo, Lima — A 10 min de UPeU · Venta Directa",
@@ -256,8 +258,18 @@ const translations = {
     form_err_name: "Por favor ingresa tu nombre",
     form_err_email: "Email inválido",
     form_submit: "Enviar mensaje a Carlos",
-    form_success: "Gracias, Carlos se pondrá en contacto contigo pronto.",
+    form_success: "Abriendo WhatsApp con tu mensaje para Carlos...",
     form_error: "Hubo un problema enviando el mensaje. Intenta por correo directo.",
+    form_required_toast: "Por favor completa los campos requeridos.",
+    form_sending: "Abriendo WhatsApp...",
+    form_wa_intro: "Hola Carlos, soy {name} y vi la propiedad de Chaclacayo.",
+    form_wa_phone: "Teléfono: {phone}",
+    form_wa_email: "Email: {email}",
+    form_wa_date: "Fecha preferida de visita: {date}",
+    form_wa_message: "Mensaje: {message}",
+    form_wa_popup_blocked: "Si no se abrió WhatsApp, toca el botón verde de abajo para retomar la conversación.",
+    lead_magnet_success: "Dossier enviado a tu correo.",
+    wa_default_message: "Hola Carlos, me interesa la propiedad en Chaclacayo.",
 
     // Closing (§13)
     closing_kicker: "Una decisión que vale conversarse",
@@ -271,7 +283,86 @@ const translations = {
     footer_explore: "Explorar",
     footer_contact: "Contacto",
     footer_legal: "© 2026 Carlos Carpio · Todos los derechos reservados",
-    footer_disclaimer: "Precio referencial · La compraventa se formaliza ante notario público."
+    footer_disclaimer: "Precio referencial · La compraventa se formaliza ante notario público.",
+
+    // WhatsApp FAB tooltip
+    fab_whatsapp_title: "Escríbeme por WhatsApp (+47 450 41 112)",
+
+    // Comments / Forum section
+    comments_kicker: "Conversación abierta",
+    comments_title: "Comentarios y preguntas",
+    comments_intro: "Comparte tu opinión, deja una pregunta sobre la propiedad o lee lo que otros visitantes han dicho. Carlos lee todo.",
+    comments_name: "Tu nombre",
+    comments_email: "Email (opcional, no se muestra)",
+    comments_message: "Tu mensaje o pregunta",
+    comments_message_ph: "Cuéntanos qué te gustaría saber...",
+    comments_submit: "Publicar comentario",
+    comments_sending: "Enviando…",
+    comments_hint: "Tu email solo nos sirve para responderte si lo deseas.",
+    comments_loading: "Cargando comentarios…",
+    comments_load_error: "No se pudieron cargar los comentarios.",
+    comments_empty: "Aún no hay comentarios. ¡Sé el primero!",
+    comments_empty_count: "Sin comentarios aún",
+    comments_count_one: "1 comentario",
+    comments_count_many: "{n} comentarios",
+    comments_submit_ok: "¡Gracias! Tu comentario está publicado.",
+    comments_submit_error: "No se pudo publicar tu comentario. Inténtalo otra vez.",
+    comments_validation: "Completa nombre y mensaje correctamente.",
+    comments_rate_local: "Espera unos segundos antes de enviar otro comentario.",
+    comments_rate_server: "Has enviado un comentario hace muy poco. Intenta de nuevo en 30 segundos.",
+    comments_reply: "Responder",
+    comments_replying_to: "Respondiendo a {name}",
+    comments_cancel_reply: "Cancelar",
+    comments_load_more: "Cargar más",
+
+    // Chatbot widget
+    chatbot_open: "Abrir asistente",
+    chatbot_close: "Cerrar asistente",
+    chatbot_send: "Enviar mensaje",
+    chatbot_fab: "Pregúntame",
+    chatbot_title: "Asistente de Carlos",
+    chatbot_sub: "Pregúntame sobre la propiedad",
+    chatbot_input_ph: "Escribe tu pregunta...",
+    chatbot_welcome: "¡Hola! Soy el asistente de Carlos para esta propiedad de Chaclacayo. Pregúntame por el precio, la ubicación, UPeU, visitas o lo que necesites.",
+    chatbot_handoff: "💬 Continuar con Carlos por WhatsApp",
+    chatbot_handoff_summary_with_question: "Hola Carlos, estaba conversando en la web y quería preguntarte: \"{question}\"",
+    chatbot_handoff_summary_default: "Hola Carlos, tengo una pregunta sobre la propiedad de Chaclacayo.",
+    chatbot_error_config: "El asistente aún no está configurado. Escríbele a Carlos por WhatsApp.",
+    chatbot_error_generic: "Hubo un problema. Intenta de nuevo o escríbele a Carlos por WhatsApp.",
+    chatbot_error_empty: "No tengo respuesta ahora mismo. Escríbele a Carlos por WhatsApp.",
+    chatbot_error_network: "Sin conexión con el asistente. Escríbele a Carlos por WhatsApp.",
+    chatbot_error_rate: "Hay demasiados mensajes seguidos. Espera un momento y vuelve a intentar.",
+    chatbot_error_model: "El modelo no respondió bien. Puedes reintentar o escribirle a Carlos por WhatsApp.",
+    chatbot_error_image: "No puedo ver imágenes. Solo puedo chatear sobre la propiedad. ¿Tienes alguna pregunta?",
+    chatbot_retry: "Reintentar",
+    chatbot_lead_saved: "Listo, guardé tus datos para Carlos.",
+    chatbot_notify_sent: "Listo, Carlos recibió un aviso por WhatsApp.",
+
+    // BYOK — Bring Your Own OpenRouter Key
+    chatbot_settings_label: "Configurar OpenRouter",
+    chatbot_byok_intro: "Conecta tu cuenta de OpenRouter para chatear con tu propia clave. Así el asistente responde aunque el servidor de Carlos esté caído.",
+    chatbot_byok_connected: "✓ Conectado con tu cuenta OpenRouter",
+    chatbot_byok_not_connected: "No conectado · usando el servidor",
+    chatbot_byok_connect: "🔑 Conectar OpenRouter",
+    chatbot_byok_disconnect: "Desconectar",
+    chatbot_byok_manual_summary: "¿Ya tienes una clave? Pégala manualmente",
+    chatbot_byok_manual_label: "OpenRouter API key (sk-or-v1-...)",
+    chatbot_byok_manual_ph: "sk-or-v1-...",
+    chatbot_byok_save: "Guardar",
+    chatbot_byok_note: "La clave solo se guarda en tu navegador (localStorage) y nunca se envía al servidor de Carlos.",
+    chatbot_byok_connected_welcome: "¡Listo! Ya estás chateando con tu propia cuenta de OpenRouter. 🔑",
+    chatbot_byok_disconnected: "Te desconecté de OpenRouter. Volveremos a usar el servidor de Carlos.",
+    chatbot_byok_invalid: "Tu clave de OpenRouter fue rechazada. La quité de tu navegador — vuelve a conectarte.",
+    chatbot_byok_suggest: "Si prefieres, abre ⚙ y conecta tu propia cuenta de OpenRouter para chatear directamente.",
+    chatbot_byok_oauth_failed: "No pude abrir OpenRouter. Revisa tu conexión y vuelve a intentar.",
+    chatbot_byok_manual_invalid: "Esa clave no tiene el formato esperado (sk-or-...). Revísala y vuelve a pegarla.",
+
+    // Quick-reply chips (also become the user message when clicked)
+    qp_price: "¿Cuánto cuesta?",
+    qp_upeu: "¿Está cerca de UPeU?",
+    qp_visit: "Quiero agendar una visita",
+    qp_whatsapp: "Hablar con Carlos por WhatsApp",
+    qp_rent: "¿Cuánto puedo rentar?"
   },
 
   en: {
@@ -282,7 +373,9 @@ const translations = {
     nav_location: "Location",
     nav_investment: "Investment",
     nav_faq: "FAQ",
+    nav_comments: "Comments",
     nav_contact: "Contact",
+    header_brand: "Investment Opportunity in Chaclacayo",
 
     // SEO
     seo_title: "Multi-Unit Property in Chaclacayo, Lima — 10 min from UPeU · Direct Sale",
@@ -528,8 +621,18 @@ const translations = {
     form_err_name: "Please enter your name",
     form_err_email: "Invalid email",
     form_submit: "Send message to Carlos",
-    form_success: "Thank you, Carlos will get in touch with you soon.",
+    form_success: "Opening WhatsApp with your message to Carlos...",
     form_error: "There was a problem sending the message. Try direct email instead.",
+    form_required_toast: "Please complete the required fields.",
+    form_sending: "Opening WhatsApp...",
+    form_wa_intro: "Hi Carlos, I'm {name} and I just saw the Chaclacayo property.",
+    form_wa_phone: "Phone: {phone}",
+    form_wa_email: "Email: {email}",
+    form_wa_date: "Preferred visit date: {date}",
+    form_wa_message: "Message: {message}",
+    form_wa_popup_blocked: "If WhatsApp didn't open, tap the green button below to continue the chat.",
+    lead_magnet_success: "Dossier sent to your email.",
+    wa_default_message: "Hi Carlos, I am interested in the Chaclacayo property.",
 
     // Closing
     closing_kicker: "A decision worth talking through",
@@ -543,7 +646,86 @@ const translations = {
     footer_explore: "Explore",
     footer_contact: "Contact",
     footer_legal: "© 2026 Carlos Carpio · All rights reserved",
-    footer_disclaimer: "Reference price · Sale formalized before public notary."
+    footer_disclaimer: "Reference price · Sale formalized before public notary.",
+
+    // WhatsApp FAB tooltip
+    fab_whatsapp_title: "Message me on WhatsApp (+47 450 41 112)",
+
+    // Comments / Forum section
+    comments_kicker: "Open conversation",
+    comments_title: "Comments & questions",
+    comments_intro: "Share your opinion, leave a question about the property, or read what other visitors have said. Carlos reads everything.",
+    comments_name: "Your name",
+    comments_email: "Email (optional, never shown)",
+    comments_message: "Your message or question",
+    comments_message_ph: "Tell us what you'd like to know...",
+    comments_submit: "Post comment",
+    comments_sending: "Sending…",
+    comments_hint: "We only use your email to reply to you if you want.",
+    comments_loading: "Loading comments…",
+    comments_load_error: "Could not load comments.",
+    comments_empty: "No comments yet. Be the first!",
+    comments_empty_count: "No comments yet",
+    comments_count_one: "1 comment",
+    comments_count_many: "{n} comments",
+    comments_submit_ok: "Thanks! Your comment is published.",
+    comments_submit_error: "Could not post your comment. Please try again.",
+    comments_validation: "Please fill in name and message correctly.",
+    comments_rate_local: "Wait a few seconds before sending another comment.",
+    comments_rate_server: "You posted a comment very recently. Try again in 30 seconds.",
+    comments_reply: "Reply",
+    comments_replying_to: "Replying to {name}",
+    comments_cancel_reply: "Cancel",
+    comments_load_more: "Load more",
+
+    // Chatbot widget
+    chatbot_open: "Open assistant",
+    chatbot_close: "Close assistant",
+    chatbot_send: "Send message",
+    chatbot_fab: "Ask me",
+    chatbot_title: "Carlos's Assistant",
+    chatbot_sub: "Ask me about the property",
+    chatbot_input_ph: "Type your question...",
+    chatbot_welcome: "Hi! I'm Carlos's assistant for this property in Chaclacayo. Ask me about the price, location, UPeU, visits or anything you need.",
+    chatbot_handoff: "💬 Continue with Carlos on WhatsApp",
+    chatbot_handoff_summary_with_question: "Hi Carlos, I was chatting on the website and wanted to ask: \"{question}\"",
+    chatbot_handoff_summary_default: "Hi Carlos, I have a question about the Chaclacayo property.",
+    chatbot_error_config: "The assistant isn't set up yet. Please write to Carlos on WhatsApp.",
+    chatbot_error_generic: "Something went wrong. Try again or write to Carlos on WhatsApp.",
+    chatbot_error_empty: "I don't have an answer right now. Write to Carlos on WhatsApp.",
+    chatbot_error_network: "No connection to the assistant. Write to Carlos on WhatsApp.",
+    chatbot_error_rate: "Too many messages in a row. Wait a moment and try again.",
+    chatbot_error_model: "The model did not respond properly. You can retry or write to Carlos on WhatsApp.",
+    chatbot_error_image: "I can't see images. I can only chat about the property. Do you have a question?",
+    chatbot_retry: "Retry",
+    chatbot_lead_saved: "Done, I saved your details for Carlos.",
+    chatbot_notify_sent: "Done, Carlos received a WhatsApp alert.",
+
+    // BYOK — Bring Your Own OpenRouter Key
+    chatbot_settings_label: "OpenRouter settings",
+    chatbot_byok_intro: "Connect your OpenRouter account to chat with your own key. The assistant will answer even when Carlos's server is down.",
+    chatbot_byok_connected: "✓ Connected with your OpenRouter account",
+    chatbot_byok_not_connected: "Not connected · using the server",
+    chatbot_byok_connect: "🔑 Connect OpenRouter",
+    chatbot_byok_disconnect: "Disconnect",
+    chatbot_byok_manual_summary: "Already have a key? Paste it manually",
+    chatbot_byok_manual_label: "OpenRouter API key (sk-or-v1-...)",
+    chatbot_byok_manual_ph: "sk-or-v1-...",
+    chatbot_byok_save: "Save",
+    chatbot_byok_note: "The key is stored only in your browser (localStorage) and never sent to Carlos's server.",
+    chatbot_byok_connected_welcome: "You're all set! You're now chatting with your own OpenRouter account. 🔑",
+    chatbot_byok_disconnected: "Disconnected from OpenRouter. I'll use Carlos's server again.",
+    chatbot_byok_invalid: "Your OpenRouter key was rejected. I removed it from your browser — please reconnect.",
+    chatbot_byok_suggest: "If you prefer, open ⚙ and connect your own OpenRouter account to chat directly.",
+    chatbot_byok_oauth_failed: "Couldn't open OpenRouter. Check your connection and try again.",
+    chatbot_byok_manual_invalid: "That key doesn't match the expected format (sk-or-...). Double-check and paste again.",
+
+    // Quick-reply chips (also become the user message when clicked)
+    qp_price: "What's the price?",
+    qp_upeu: "Is it close to UPeU?",
+    qp_visit: "I'd like to schedule a visit",
+    qp_whatsapp: "Talk to Carlos on WhatsApp",
+    qp_rent: "How much could I rent it for?"
   }
 };
 
@@ -574,6 +756,20 @@ function setLanguage(lang) {
     }
   });
 
+  document.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+    const key = el.getAttribute('data-i18n-aria-label');
+    if (translations[lang][key] !== undefined) {
+      el.setAttribute('aria-label', translations[lang][key]);
+    }
+  });
+
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    if (translations[lang][key] !== undefined) {
+      el.setAttribute('title', translations[lang][key]);
+    }
+  });
+
   document.documentElement.lang = lang;
 
   const toggleBtn = document.getElementById('lang-toggle');
@@ -582,7 +778,16 @@ function setLanguage(lang) {
   }
 
   localStorage.setItem('lang', lang);
+
+  // Notify dynamic components (comments timestamps, chatbot welcome, etc.)
+  document.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+
+  // Expose translations globally for ES modules that need them at runtime
+  window.translations = translations;
 }
+
+// Expose immediately (modules may load before setLanguage runs)
+window.translations = translations;
 
 document.addEventListener('DOMContentLoaded', () => {
   const savedLang = localStorage.getItem('lang');

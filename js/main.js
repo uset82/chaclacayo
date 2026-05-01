@@ -1,7 +1,31 @@
 // js/main.js
 // Core logic and animations for Chaclacayo Landing Page
 
+const CARLOS_WA = window.APP_CONFIG?.CARLOS_WA || '4745041112';
+
+function uiText(key) {
+  const lang = (document.documentElement.lang || 'es').slice(0, 2);
+  return window.translations?.[lang]?.[key] || key;
+}
+
+function waLink(message = '') {
+  const params = new URLSearchParams({
+    phone: CARLOS_WA,
+    type: 'phone_number',
+    app_absent: '0'
+  });
+  if (message) params.set('text', message);
+  return `https://api.whatsapp.com/send/?${params.toString()}`;
+}
+
+window.ChaclacayoContact = { CARLOS_WA, waLink };
+
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-wa-message]').forEach(link => {
+    link.href = waLink(link.dataset.waMessage || uiText('wa_default_message'));
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  });
   
   // 1. IntersectionObserver for scroll animations
   const observerOptions = {
@@ -131,36 +155,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000);
   }
 
-  // 7. Forms Handling (Client-side validation & fake submit)
+  // 7. Forms Handling — hand the lead straight to Carlos via WhatsApp
+  //    (SIMPLE mode: no backend notification — the pre-filled chat IS the delivery)
+  function buildLeadMessage({ name, phone, email, date, message }) {
+    const parts = [uiText('form_wa_intro').replace('{name}', name)];
+    if (phone)   parts.push(uiText('form_wa_phone').replace('{phone}', phone));
+    if (email)   parts.push(uiText('form_wa_email').replace('{email}', email));
+    if (date)    parts.push(uiText('form_wa_date').replace('{date}', date));
+    if (message) parts.push(uiText('form_wa_message').replace('{message}', message));
+    return parts.join('\n');
+  }
+
   const contactForm = document.getElementById('contact-form');
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      
+
       // Honeypot check
       const hp = contactForm.querySelector('input[name="hp"]');
       if (hp && hp.value !== '') return; // Bot detected
 
-      const name = contactForm.querySelector('#cf-name').value;
-      const email = contactForm.querySelector('#cf-email').value;
+      const name    = contactForm.querySelector('#cf-name').value.trim();
+      const email   = contactForm.querySelector('#cf-email').value.trim();
+      const phone   = contactForm.querySelector('#cf-phone')?.value.trim() || '';
+      const date    = contactForm.querySelector('#cf-date')?.value.trim() || '';
+      const message = contactForm.querySelector('#cf-message')?.value.trim() || '';
 
       if (!name || !email) {
-        showToast('Por favor completa los campos requeridos.', true);
+        showToast(uiText('form_required_toast'), true);
         return;
       }
 
-      // Simulate sending
       const submitBtn = contactForm.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
-      submitBtn.textContent = 'Enviando...';
+      submitBtn.textContent = uiText('form_sending');
       submitBtn.disabled = true;
 
-      setTimeout(() => {
-        showToast('Mensaje enviado. Carlos te contactará pronto.');
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        contactForm.reset();
-      }, 1500);
+      const url = waLink(buildLeadMessage({ name, phone, email, date, message }));
+      const opened = window.open(url, '_blank', 'noopener,noreferrer');
+
+      if (!opened) {
+        // Popup blocked — fall back to same-tab redirect so Carlos still gets the lead.
+        showToast(uiText('form_wa_popup_blocked'), true);
+        window.location.href = url;
+        return;
+      }
+
+      showToast(uiText('form_success'));
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+      contactForm.reset();
     });
   }
 
@@ -174,11 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const submitBtn = leadMagnetForm.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
-      submitBtn.textContent = 'Enviando...';
+      submitBtn.textContent = uiText('form_sending');
       submitBtn.disabled = true;
 
       setTimeout(() => {
-        showToast('Dossier enviado a tu correo.');
+        showToast(uiText('lead_magnet_success'));
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
         leadMagnetForm.reset();

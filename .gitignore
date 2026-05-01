@@ -1,0 +1,38 @@
+# Environment files - NEVER commit these
+.env
+.env.local
+.env.*.local
+*.env
+supabase/.env
+supabase/.env.local
+
+# Supabase CLI temp/cache
+supabase/.temp/
+supabase/.branches/
+
+# Node / dependencies (we're static, but just in case)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build artifacts (none for now, future-proofing)
+dist/
+build/
+
+# Local working notes
+*.local.md
+.local/

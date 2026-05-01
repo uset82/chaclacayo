@@ -38,6 +38,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
+  <!-- Preload LCP image (hero background) for better mobile Lighthouse scores -->
+  <link rel="preload" as="image" fetchpriority="high" href="./FOTOS/WhatsApp Image 2026-04-27 at 15.54.13.jpeg">
+
   <!-- CSS -->
   <link rel="stylesheet" href="./css/styles.css">
 
@@ -115,7 +118,7 @@
   <header class="header" id="site-header">
     <div class="container header__inner">
       <div class="header__logo">
-        <a href="#hero">Carlos Carpio</a>
+        <a href="#hero" data-i18n="header_brand">Oportunidad de Inversión en Chaclacayo</a>
       </div>
 
       <nav class="header__nav" aria-label="Main navigation">
@@ -125,6 +128,7 @@
           <li><a href="#location" data-i18n="nav_location">Ubicación</a></li>
           <li><a href="#investment" data-i18n="nav_investment">Inversión</a></li>
           <li><a href="#faq" data-i18n="nav_faq">FAQ</a></li>
+          <li><a href="#comments" data-i18n="nav_comments">Comentarios</a></li>
           <li><a href="#contact" data-i18n="nav_contact">Contacto</a></li>
         </ul>
 
@@ -140,9 +144,10 @@
     <section id="hero" class="hero">
       <div class="hero__bg"></div>
       <div class="hero__overlay"></div>
-      <div class="container hero__content reveal">
-        <div class="hero__badge" data-i18n="hero_badge">Venta Directa — Sin Intermediarios</div>
-        <h1 class="hero__title" data-i18n="hero_headline">Tu Oasis en Chaclacayo</h1>
+    <div class="container hero__content reveal">
+      <p class="hero__kicker" data-i18n="header_brand">Oportunidad de Inversión en Chaclacayo</p>
+      <div class="hero__badge" data-i18n="hero_badge">Venta Directa — Sin Intermediarios</div>
+      <h1 class="hero__title" data-i18n="hero_headline">Tu Oasis en Chaclacayo</h1>
         <p class="hero__subheadline" data-i18n="hero_subheadline">Casa multi-unidad · 330 m² · 15 habitaciones · A 10 min de UPeU</p>
         <p class="hero__subline" data-i18n="hero_subline">Venta directa por su dueño · A 40 min de Lima · Ideal hospedaje, Airbnb o alquiler estudiantil</p>
         <div class="hero__actions">
@@ -342,7 +347,12 @@
         <!-- UPeU Featured Block — clave de inversión -->
         <article class="upeu-feature reveal" aria-labelledby="upeu-title">
           <span class="upeu-feature__badge">🎓 <span data-i18n="upeu_badge">A 10 minutos · ventaja única</span></span>
-          <h3 id="upeu-title" class="upeu-feature__title" data-i18n="upeu_title">Universidad Peruana Unión (UPeU)</h3>
+          
+          <div class="upeu-feature__header">
+            <img src="./assets/images/upeu-logo.png" alt="Logo UPeU" class="upeu-feature__logo" loading="lazy">
+            <h3 id="upeu-title" class="upeu-feature__title" data-i18n="upeu_title">Universidad Peruana Unión (UPeU)</h3>
+          </div>
+          
           <p class="upeu-feature__sub" data-i18n="upeu_sub">La universidad adventista más importante de Sudamérica. Una comunidad universitaria activa todo el año a un trayecto corto de la propiedad — alumnos, docentes, familias en visita y eventos académicos generan demanda constante de hospedaje y alquiler.</p>
 
           <div class="upeu-feature__stats">
@@ -639,6 +649,49 @@
 
 
 
+    <!-- §11.5 COMENTARIOS / FORUM -->
+    <section id="comments" class="section comments">
+      <div class="container">
+        <p class="subtitle reveal" data-i18n="comments_kicker">Conversación abierta</p>
+        <h2 class="section-title reveal" data-i18n="comments_title">Comentarios y preguntas</h2>
+        <p class="section__intro reveal" data-i18n="comments_intro">Comparte tu opinión, deja una pregunta sobre la propiedad o lee lo que otros visitantes han dicho. Carlos lee todo.</p>
+
+        <form class="comments-form reveal" id="comments-form" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="cm-name" data-i18n="comments_name">Tu nombre</label>
+              <input type="text" id="cm-name" name="name" minlength="2" maxlength="60" required aria-describedby="comments-form-error comments-form-hint">
+            </div>
+            <div class="form-field">
+              <label for="cm-email" data-i18n="comments_email">Email (opcional, no se muestra)</label>
+              <input type="email" id="cm-email" name="email" maxlength="120" aria-describedby="comments-form-hint">
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="cm-message" data-i18n="comments_message">Tu mensaje o pregunta</label>
+            <textarea id="cm-message" name="message" rows="3" minlength="5" maxlength="800" required placeholder="Cuéntanos qué te gustaría saber..." data-i18n-placeholder="comments_message_ph" aria-describedby="comments-form-error comments-form-hint"></textarea>
+          </div>
+          <input type="text" name="hp" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" placeholder="Leave empty">
+          <p id="comments-form-error" class="comments-form__error" role="alert" hidden></p>
+          <div class="comments-form__actions">
+            <button type="submit" class="btn btn--accent" data-i18n="comments_submit">Publicar comentario</button>
+            <span id="comments-form-hint" class="comments-form__hint" data-i18n="comments_hint">Tu email solo nos sirve para responderte si lo deseas.</span>
+          </div>
+        </form>
+
+        <div class="comments-list-wrapper reveal">
+          <div class="comments-toolbar">
+            <span class="comments-count" id="comments-count" data-i18n="comments_loading">Cargando comentarios…</span>
+          </div>
+          <ul class="comments-list" id="comments-list" aria-live="polite"></ul>
+          <div class="comments-empty" id="comments-empty" hidden>
+            <p data-i18n="comments_empty">Aún no hay comentarios. ¡Sé el primero!</p>
+          </div>
+          <button type="button" class="comments-load-more" id="comments-load-more" data-i18n="comments_load_more" hidden>Cargar más</button>
+        </div>
+      </div>
+    </section>
+
     <!-- §12 CONTACTO -->
     <section id="contact" class="section bg-card">
       <div class="container">
@@ -657,7 +710,7 @@
             </div>
             <div class="contact-info__item">
               <span class="contact-info__icon">📱</span>
-              <a href="https://wa.me/?text=Hola%20Carlos,%20me%20interesa%20la%20propiedad%20en%20Chaclacayo" target="_blank" rel="noopener">WhatsApp directo</a>
+              <a href="https://api.whatsapp.com/send/?phone=4745041112&text=Hola%20Carlos%2C%20me%20interesa%20la%20propiedad%20en%20Chaclacayo.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" data-wa-message="Hola Carlos, vengo desde la sección de contacto y me interesa la propiedad en Chaclacayo.">+47 450 41 112 · WhatsApp directo</a>
             </div>
             <div class="contact-info__item">
               <span class="contact-info__icon">📍</span>
@@ -670,7 +723,7 @@
 
             <div class="contact-info__cta-row">
               <a href="mailto:carloscarpio82@hotmail.com" class="btn btn--primary" data-i18n="contact_cta_email">📧 Enviar correo</a>
-              <a href="https://wa.me/?text=Hola%20Carlos,%20me%20interesa%20la%20propiedad%20en%20Chaclacayo" target="_blank" rel="noopener" class="btn btn--glass" data-i18n="contact_cta_wa">💬 WhatsApp</a>
+              <a href="https://api.whatsapp.com/send/?phone=4745041112&text=Hola%20Carlos%2C%20me%20interesa%20la%20propiedad%20en%20Chaclacayo.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="btn btn--glass" data-i18n="contact_cta_wa" data-wa-message="Hola Carlos, quiero coordinar una visita a la propiedad de Chaclacayo.">💬 WhatsApp</a>
             </div>
           </div>
 
@@ -720,7 +773,7 @@
         <p class="closing__text" data-i18n="closing_text">Propiedades con estas características y potencial no aparecen con frecuencia. Hablemos hoy mismo.</p>
         <div class="closing__actions">
           <a href="#contact" class="btn btn--accent" data-i18n="closing_cta_1">Contactar a Carlos ahora</a>
-          <a href="https://wa.me/?text=Hola%20Carlos,%20me%20interesa%20la%20propiedad%20en%20Chaclacayo" target="_blank" rel="noopener" class="btn btn--glass" data-i18n="closing_cta_2">💬 WhatsApp</a>
+          <a href="https://api.whatsapp.com/send/?phone=4745041112&text=Hola%20Carlos%2C%20vengo%20del%20cierre%20y%20quiero%20conversar%20sobre%20la%20propiedad%20de%20Chaclacayo.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" class="btn btn--glass" data-i18n="closing_cta_2" data-wa-message="Hola Carlos, vengo del cierre de la página y quiero conversar sobre la propiedad de Chaclacayo.">💬 WhatsApp</a>
         </div>
       </div>
     </section>
@@ -745,13 +798,14 @@
             <li><a href="#location" data-i18n="nav_location">Ubicación</a></li>
             <li><a href="#investment" data-i18n="nav_investment">Inversión</a></li>
             <li><a href="#faq" data-i18n="nav_faq">FAQ</a></li>
+            <li><a href="#comments" data-i18n="nav_comments">Comentarios</a></li>
           </ul>
         </div>
         <div class="footer__col">
           <h4 data-i18n="footer_contact">Contacto</h4>
           <ul>
             <li><a href="mailto:carloscarpio82@hotmail.com">carloscarpio82@hotmail.com</a></li>
-            <li><a href="https://wa.me/?text=Hola%20Carlos,%20me%20interesa%20la%20propiedad%20en%20Chaclacayo" target="_blank" rel="noopener">WhatsApp directo</a></li>
+            <li><a href="https://api.whatsapp.com/send/?phone=4745041112&text=Hola%20Carlos%2C%20me%20interesa%20la%20propiedad%20en%20Chaclacayo.&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" data-wa-message="Hola Carlos, vengo desde el pie de página y me interesa la propiedad en Chaclacayo.">+47 450 41 112 · WhatsApp directo</a></li>
             <li><a href="#contact" data-i18n="nav_contact">Formulario</a></li>
           </ul>
         </div>
@@ -763,8 +817,82 @@
     </div>
   </footer>
 
-  <!-- Floating WhatsApp -->
-  <a href="https://wa.me/?text=Hola,%20me%20interesa%20la%20propiedad%20en%20Chaclacayo" class="fab-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+  <!-- Smart Chatbot Widget -->
+  <button id="chatbot-fab" class="chatbot-fab" aria-label="Abrir asistente" aria-expanded="false" aria-controls="chatbot-panel" data-i18n-aria-label="chatbot_open">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <span class="chatbot-fab__label" data-i18n="chatbot_fab">Pregúntame</span>
+  </button>
+
+  <aside id="chatbot-panel" class="chatbot-panel" role="dialog" aria-modal="false" aria-labelledby="chatbot-title" hidden>
+    <header class="chatbot-panel__header">
+      <div class="chatbot-panel__title-wrap">
+        <span class="chatbot-panel__avatar" aria-hidden="true">CC</span>
+        <div>
+          <h3 id="chatbot-title" class="chatbot-panel__title" data-i18n="chatbot_title">Asistente de Carlos</h3>
+          <p class="chatbot-panel__sub" data-i18n="chatbot_sub">Pregúntame sobre la propiedad</p>
+        </div>
+      </div>
+      <span class="chatbot-panel__lang" id="chatbot-lang" aria-live="polite">ES</span>
+      <button class="chatbot-panel__settings" id="chatbot-settings-btn" type="button" aria-expanded="false" aria-controls="chatbot-settings" aria-label="Configurar OpenRouter" data-i18n-aria-label="chatbot_settings_label">⚙</button>
+      <button class="chatbot-panel__close" id="chatbot-close" aria-label="Cerrar" data-i18n-aria-label="chatbot_close">✕</button>
+    </header>
+
+    <div id="chatbot-settings" class="chatbot-panel__settings-panel" hidden>
+      <p class="chatbot-panel__settings-intro" data-i18n="chatbot_byok_intro">Conecta tu cuenta de OpenRouter para chatear con tu propia clave. Así el asistente responde aunque el servidor de Carlos esté caído.</p>
+      <div class="chatbot-panel__settings-status" id="chatbot-byok-status" data-i18n="chatbot_byok_not_connected">No conectado · usando el servidor</div>
+      <div class="chatbot-panel__settings-actions">
+        <button type="button" class="btn btn--accent chatbot-panel__connect" id="chatbot-connect-btn" data-i18n="chatbot_byok_connect">🔑 Conectar OpenRouter</button>
+        <button type="button" class="btn btn--glass chatbot-panel__disconnect" id="chatbot-disconnect-btn" hidden data-i18n="chatbot_byok_disconnect">Desconectar</button>
+      </div>
+      <details class="chatbot-panel__settings-manual">
+        <summary data-i18n="chatbot_byok_manual_summary">¿Ya tienes una clave? Pégala manualmente</summary>
+        <label for="chatbot-byok-input" class="chatbot-panel__settings-label" data-i18n="chatbot_byok_manual_label">OpenRouter API key (sk-or-v1-...)</label>
+        <div class="chatbot-panel__settings-row">
+          <input id="chatbot-byok-input" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-v1-..." data-i18n-placeholder="chatbot_byok_manual_ph">
+          <button type="button" id="chatbot-byok-save" class="btn btn--small" data-i18n="chatbot_byok_save">Guardar</button>
+        </div>
+      </details>
+      <p class="chatbot-panel__settings-note" data-i18n="chatbot_byok_note">La clave solo se guarda en tu navegador (localStorage) y nunca se envía al servidor de Carlos.</p>
+    </div>
+
+    <div class="chatbot-panel__messages" id="chatbot-messages" aria-live="polite"></div>
+
+    <div class="chatbot-panel__quick" id="chatbot-quick">
+      <button class="chip-quick" type="button" data-prompt-key="qp_price" data-i18n="qp_price">¿Cuánto cuesta?</button>
+      <button class="chip-quick" type="button" data-prompt-key="qp_upeu" data-i18n="qp_upeu">¿Está cerca de UPeU?</button>
+      <button class="chip-quick" type="button" data-prompt-key="qp_visit" data-i18n="qp_visit">Quiero agendar una visita</button>
+      <button class="chip-quick" type="button" data-action="handoff" data-prompt-key="qp_whatsapp" data-i18n="qp_whatsapp">Hablar con Carlos por WhatsApp</button>
+      <button class="chip-quick" type="button" data-prompt-key="qp_rent" data-i18n="qp_rent">¿Cuánto puedo rentar?</button>
+    </div>
+
+    <form id="chatbot-form" class="chatbot-panel__form" autocomplete="off">
+      <input
+        id="chatbot-input"
+        type="text"
+        name="text"
+        maxlength="1000"
+        required
+        placeholder="Escribe tu pregunta..."
+        data-i18n-placeholder="chatbot_input_ph"
+        aria-label="Mensaje"
+      >
+      <button type="submit" class="chatbot-panel__send" aria-label="Enviar" data-i18n-aria-label="chatbot_send">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </form>
+
+    <a id="chatbot-handoff" class="chatbot-handoff" href="https://api.whatsapp.com/send/?phone=4745041112&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" hidden>
+      <span data-i18n="chatbot_handoff">💬 Continuar con Carlos por WhatsApp</span>
+    </a>
+  </aside>
+
+  <!-- Floating WhatsApp (links to Carlos: +47 450 41 112) -->
+  <a href="https://api.whatsapp.com/send/?phone=4745041112&text=Hola%20Carlos%2C%20me%20interesa%20la%20propiedad%20en%20Chaclacayo.&type=phone_number&app_absent=0" class="fab-whatsapp" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Carlos +47 450 41 112" data-i18n-title="fab_whatsapp_title" title="Escríbeme por WhatsApp" data-wa-message="Hola Carlos, vi la página web y me interesa la propiedad en Chaclacayo.">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
     </svg>
@@ -779,9 +907,69 @@
   <!-- Toast container -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <!-- Runtime config (public values only — Supabase RLS protects the data) -->
+  <script>
+    window.APP_CONFIG = {
+      SUPABASE_URL: "https://jcjygxooykoyhkbuoxex.supabase.co",
+      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_enc7sZVW8c07j0N4LBIpIA_mG6tlzje",
+      // Edge Function path on the linked Supabase project
+      CHAT_ENDPOINT: "https://jcjygxooykoyhkbuoxex.supabase.co/functions/v1/chat",
+      CARLOS_WA: "4745041112"
+    };
+  </script>
+
   <!-- Scripts -->
   <script src="./js/i18n.js"></script>
   <script src="./js/gallery.js"></script>
   <script src="./js/main.js"></script>
+  <script type="module">
+    const loadOnce = (() => {
+      const cache = new Map();
+      return (path) => {
+        if (!cache.has(path)) cache.set(path, import(path));
+        return cache.get(path);
+      };
+    })();
+
+    const loadComments = () => loadOnce("./js/comments.js");
+    const loadChatbot = () => loadOnce("./js/chatbot.js");
+
+    const commentsSection = document.getElementById("comments");
+    if ("IntersectionObserver" in window && commentsSection) {
+      const commentsObserver = new IntersectionObserver((entries, observer) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          loadComments();
+          observer.disconnect();
+        }
+      }, { rootMargin: "360px 0px" });
+      commentsObserver.observe(commentsSection);
+    } else {
+      loadComments();
+    }
+
+    const chatFab = document.getElementById("chatbot-fab");
+    const openChatOnDemand = async (event) => {
+      if (window.ChaclacayoChatbot) return;
+      event.preventDefault();
+      event.stopPropagation();
+      await loadChatbot();
+      window.ChaclacayoChatbot?.toggle();
+    };
+
+    chatFab?.addEventListener("click", openChatOnDemand, { once: true });
+    chatFab?.addEventListener("focus", () => loadChatbot(), { once: true });
+    chatFab?.addEventListener("pointerenter", () => loadChatbot(), { once: true });
+
+    const hero = document.getElementById("hero");
+    if ("IntersectionObserver" in window && hero) {
+      const chatObserver = new IntersectionObserver((entries, observer) => {
+        if (entries.some((entry) => !entry.isIntersecting)) {
+          loadChatbot();
+          observer.disconnect();
+        }
+      }, { threshold: 0 });
+      chatObserver.observe(hero);
+    }
+  </script>
 </body>
 </html>

@@ -1,0 +1,7 @@
+# Minimal Supabase project config — Chaclacayo landing page
+# Linked to project: jcjygxooykoyhkbuoxex
+
+project_id = "chaclacayo"
+
+[functions.chat]
+verify_jwt = false
