@@ -21,12 +21,15 @@ const OPENROUTER_URL  = "https://openrouter.ai/api/v1/chat/completions";
 // `openrouter/free` (Free Models Router) is convenient but flaky: it picks a
 // random free model per request and many of those are rate-limited or down at
 // any given time, which produced the 502/“El modelo no respondió bien” errors
-// users were seeing. We pin to specific free models that have been stable and
-// fall back automatically if any single one rejects the call.
-const DEFAULT_MODEL: string = "meta-llama/llama-3.3-70b-instruct:free";
+// users were seeing. We pin to specific free models that exist in the live
+// OpenRouter catalog and fall back automatically if any single one rejects
+// the call. Catalog reference: GET https://openrouter.ai/api/v1/models.
+const DEFAULT_MODEL: string = "nvidia/nemotron-3-nano-30b-a3b:free";
 const DEFAULT_FALLBACKS: string[] = [
-  "google/gemini-2.0-flash-exp:free",
-  "mistralai/mistral-small-3.1-24b-instruct:free",
+  "google/gemma-3-27b-it:free",
+  "qwen/qwen3-next-80b-a3b-instruct:free",
+  "openai/gpt-oss-20b:free",
+  "meta-llama/llama-3.2-3b-instruct:free",
   "openrouter/free", // last resort: random free model
 ];
 
@@ -36,10 +39,11 @@ const REQUEST_TIMEOUT = 25_000;
 
 // HTTP statuses where switching to a fallback model is worth trying.
 // 401/403 are auth issues — same key everywhere, fallback won't help.
+// 404 means the model id no longer exists / has no providers — try next.
 function isRetryableUpstreamStatus(status: number): boolean {
-  return status === 408 || status === 409 || status === 425
-      || status === 429 || status === 500 || status === 502
-      || status === 503 || status === 504;
+  return status === 404 || status === 408 || status === 409
+      || status === 425 || status === 429 || status === 500
+      || status === 502 || status === 503 || status === 504;
 }
 
 const PROPERTY_FACTS = `
@@ -195,8 +199,8 @@ export default async (req: Request, _context: Context): Promise<Response> => {
     { role: "user", content: userText },
   ];
 
-  let lastStatus = 0;
-  let lastDetail = "";
+  type Attempt = { model: string; status: number; detail?: string };
+  const attempts: Attempt[] = [];
 
   for (let i = 0; i < candidates.length; i += 1) {
     const tryModel = candidates[i];
@@ -228,7 +232,8 @@ export default async (req: Request, _context: Context): Promise<Response> => {
         };
         const reply = data?.choices?.[0]?.message?.content?.trim() ?? "";
         if (reply) {
-          if (i > 0) console.warn("[chat] fallback_succeeded", { triedModel: tryModel, attempt: i + 1 });
+          attempts.push({ model: tryModel, status: 200 });
+          if (i > 0) console.warn("[chat] fallback_succeeded", { tryModel, attempt: i + 1, attempts });
           return jsonResponse(
             {
               reply,
@@ -239,37 +244,37 @@ export default async (req: Request, _context: Context): Promise<Response> => {
           );
         }
         // Empty completion — treat as retryable.
-        lastStatus = 502;
-        lastDetail = "empty_completion";
+        attempts.push({ model: tryModel, status: 502, detail: "empty_completion" });
         console.warn("[chat] empty_completion", { tryModel });
       } else {
-        lastStatus = upstream.status;
-        lastDetail = (await upstream.text().catch(() => "")).slice(0, 500);
-        console.warn("[chat] openrouter_error", { tryModel, status: lastStatus, detail: lastDetail });
+        const status = upstream.status;
+        const detail = (await upstream.text().catch(() => "")).slice(0, 500);
+        attempts.push({ model: tryModel, status, detail });
+        console.warn("[chat] openrouter_error", { tryModel, status, detail });
 
         // Auth / quota errors won't be solved by another model — bail out.
-        if (lastStatus === 401 || lastStatus === 403) break;
-        // For non-retryable client errors (other 4xx besides 408/409/425/429), bail.
-        if (!isRetryableUpstreamStatus(lastStatus)) break;
+        if (status === 401 || status === 403) break;
+        // For non-retryable client errors, bail (don't waste calls).
+        if (!isRetryableUpstreamStatus(status)) break;
         // Otherwise loop continues to the next fallback.
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      lastStatus = 504;
-      lastDetail = msg.slice(0, 200);
-      console.warn("[chat] fetch_failed", { tryModel, msg: lastDetail });
+      attempts.push({ model: tryModel, status: 504, detail: msg.slice(0, 200) });
+      console.warn("[chat] fetch_failed", { tryModel, msg });
     } finally {
       clearTimeout(tid);
     }
   }
 
   // All candidates exhausted.
-  console.error("[chat] all_models_failed", { tried: candidates, lastStatus, lastDetail });
-  const status = lastStatus === 429 ? 429
-              : lastStatus === 401 || lastStatus === 403 ? 502
-              : 502;
+  const last = attempts[attempts.length - 1];
+  const lastStatus = last?.status ?? 0;
+  const lastDetail = last?.detail ?? "";
+  console.error("[chat] all_models_failed", { attempts });
+  const status = lastStatus === 429 ? 429 : 502;
   return jsonResponse(
-    { error: "model_error", status: lastStatus, detail: lastDetail, tried: candidates },
+    { error: "model_error", status: lastStatus, detail: lastDetail, attempts },
     { status, origin: reqOrigin },
   );
 };
