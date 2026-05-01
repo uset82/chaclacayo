@@ -6,8 +6,10 @@
 //   Netlify project → Site configuration → Environment variables.
 //
 // Optional env vars:
-//   OPENROUTER_MODEL   – override the default OpenRouter model id.
-//   ALLOWED_ORIGIN     – comma-separated origins for CORS. "*" by default.
+//   OPENROUTER_MODEL    – primary model id. Defaults to a known-stable free model.
+//   OPENROUTER_FALLBACK – comma-separated list of fallback model ids to try
+//                         in order when the primary returns 4xx/5xx.
+//   ALLOWED_ORIGIN      – comma-separated origins for CORS. "*" by default.
 //
 // The endpoint expects JSON: { session_token, lang, text, history? }.
 // Returns:                   { reply, model } on success.
@@ -15,10 +17,30 @@
 import type { Context } from "@netlify/functions";
 
 const OPENROUTER_URL  = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL   = "openrouter/free"; // Free Models Router (auto-selects a free model)
+
+// `openrouter/free` (Free Models Router) is convenient but flaky: it picks a
+// random free model per request and many of those are rate-limited or down at
+// any given time, which produced the 502/“El modelo no respondió bien” errors
+// users were seeing. We pin to specific free models that have been stable and
+// fall back automatically if any single one rejects the call.
+const DEFAULT_MODEL: string = "meta-llama/llama-3.3-70b-instruct:free";
+const DEFAULT_FALLBACKS: string[] = [
+  "google/gemini-2.0-flash-exp:free",
+  "mistralai/mistral-small-3.1-24b-instruct:free",
+  "openrouter/free", // last resort: random free model
+];
+
 const MAX_HISTORY     = 12;
 const MAX_USER_CHARS  = 1000;
 const REQUEST_TIMEOUT = 25_000;
+
+// HTTP statuses where switching to a fallback model is worth trying.
+// 401/403 are auth issues — same key everywhere, fallback won't help.
+function isRetryableUpstreamStatus(status: number): boolean {
+  return status === 408 || status === 409 || status === 425
+      || status === 429 || status === 500 || status === 502
+      || status === 503 || status === 504;
+}
 
 const PROPERTY_FACTS = `
 PROPERTY FACTS (use these to ground every answer — never invent numbers):
@@ -153,68 +175,103 @@ export default async (req: Request, _context: Context): Promise<Response> => {
     );
   }
 
-  const model = (process.env.OPENROUTER_MODEL ?? DEFAULT_MODEL).trim() || DEFAULT_MODEL;
-  const history = sanitizeHistory(payload.history);
+  const primaryModel = (process.env.OPENROUTER_MODEL ?? DEFAULT_MODEL).trim() || DEFAULT_MODEL;
+  const fallbackModels = (process.env.OPENROUTER_FALLBACK ?? DEFAULT_FALLBACKS.join(","))
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
+  // Build the ordered candidate list, deduped, with the primary first.
+  const seen = new Set<string>();
+  const candidates: string[] = [];
+  for (const m of [primaryModel, ...fallbackModels]) {
+    if (!seen.has(m)) { seen.add(m); candidates.push(m); }
+  }
+
+  const history = sanitizeHistory(payload.history);
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
     ...history,
     { role: "user", content: userText },
   ];
 
-  const ctrl = new AbortController();
-  const tid = setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT);
+  let lastStatus = 0;
+  let lastDetail = "";
 
-  try {
-    const upstream = await fetch(OPENROUTER_URL, {
-      method: "POST",
-      signal: ctrl.signal,
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type":  "application/json",
-        "HTTP-Referer":  reqOrigin ?? "https://chaclacayo.netlify.app",
-        "X-Title":       "Chaclacayo Property Assistant",
-      },
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0.4,
-        max_tokens: 400,
-      }),
-    });
+  for (let i = 0; i < candidates.length; i += 1) {
+    const tryModel = candidates[i];
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT);
 
-    if (!upstream.ok) {
-      const detail = await upstream.text().catch(() => "");
-      console.error("[chat] openrouter_error", upstream.status, detail.slice(0, 500));
-      return jsonResponse(
-        { error: "model_error", status: upstream.status, detail: detail.slice(0, 500) },
-        { status: upstream.status === 429 ? 429 : 502, origin: reqOrigin },
-      );
+    try {
+      const upstream = await fetch(OPENROUTER_URL, {
+        method: "POST",
+        signal: ctrl.signal,
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type":  "application/json",
+          "HTTP-Referer":  reqOrigin ?? "https://chaclacayo.netlify.app",
+          "X-Title":       "Chaclacayo Property Assistant",
+        },
+        body: JSON.stringify({
+          model: tryModel,
+          messages,
+          temperature: 0.4,
+          max_tokens: 400,
+        }),
+      });
+
+      if (upstream.ok) {
+        const data = await upstream.json() as {
+          choices?: Array<{ message?: { content?: string } }>;
+          model?: string;
+        };
+        const reply = data?.choices?.[0]?.message?.content?.trim() ?? "";
+        if (reply) {
+          if (i > 0) console.warn("[chat] fallback_succeeded", { triedModel: tryModel, attempt: i + 1 });
+          return jsonResponse(
+            {
+              reply,
+              model: data.model ?? tryModel,
+              session_token: payload.session_token ?? null,
+            },
+            { status: 200, origin: reqOrigin },
+          );
+        }
+        // Empty completion — treat as retryable.
+        lastStatus = 502;
+        lastDetail = "empty_completion";
+        console.warn("[chat] empty_completion", { tryModel });
+      } else {
+        lastStatus = upstream.status;
+        lastDetail = (await upstream.text().catch(() => "")).slice(0, 500);
+        console.warn("[chat] openrouter_error", { tryModel, status: lastStatus, detail: lastDetail });
+
+        // Auth / quota errors won't be solved by another model — bail out.
+        if (lastStatus === 401 || lastStatus === 403) break;
+        // For non-retryable client errors (other 4xx besides 408/409/425/429), bail.
+        if (!isRetryableUpstreamStatus(lastStatus)) break;
+        // Otherwise loop continues to the next fallback.
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      lastStatus = 504;
+      lastDetail = msg.slice(0, 200);
+      console.warn("[chat] fetch_failed", { tryModel, msg: lastDetail });
+    } finally {
+      clearTimeout(tid);
     }
-
-    const data = await upstream.json() as {
-      choices?: Array<{ message?: { content?: string } }>;
-      model?: string;
-    };
-    const reply = data?.choices?.[0]?.message?.content?.trim() ?? "";
-    if (!reply) {
-      return jsonResponse({ error: "empty_completion" }, { status: 502, origin: reqOrigin });
-    }
-
-    return jsonResponse(
-      { reply, model: data.model ?? model, session_token: payload.session_token ?? null },
-      { status: 200, origin: reqOrigin },
-    );
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error("[chat] fetch_failed", msg);
-    return jsonResponse(
-      { error: "fetch_failed", detail: msg.slice(0, 200) },
-      { status: 504, origin: reqOrigin },
-    );
-  } finally {
-    clearTimeout(tid);
   }
+
+  // All candidates exhausted.
+  console.error("[chat] all_models_failed", { tried: candidates, lastStatus, lastDetail });
+  const status = lastStatus === 429 ? 429
+              : lastStatus === 401 || lastStatus === 403 ? 502
+              : 502;
+  return jsonResponse(
+    { error: "model_error", status: lastStatus, detail: lastDetail, tried: candidates },
+    { status, origin: reqOrigin },
+  );
 };
 
 export const config = {
