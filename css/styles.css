@@ -379,13 +379,15 @@ img, video {
 }
 
 .value-card__logo {
-  width: 84px;
-  height: 84px;
+  width: 64px;
+  height: 64px;
   object-fit: contain;
   margin-bottom: 0.9rem;
-  background: white;
-  border-radius: 12px;
-  padding: 6px;
+  /* No background / padding / border-radius: the source PNG already has its
+     own rounded blue card and drop shadow baked in. Wrapping it in another
+     white tile created a double-framed look on small screens. */
+  background: transparent;
+  display: block;
 }
 
 .value-card:hover {
@@ -907,13 +909,13 @@ img, video {
 }
 
 .upeu-feature__logo {
-  width: 86px;
-  height: 86px;
-  border-radius: 12px;
+  width: 72px;
+  height: 72px;
   object-fit: contain;
-  background: var(--color-white);
   flex-shrink: 0;
-  padding: 6px;
+  /* No extra wrapper styling: the PNG already has its own rounded card. */
+  background: transparent;
+  display: block;
 }
 
 .upeu-feature__title {
