@@ -337,6 +337,8 @@ const translations = {
     chatbot_retry: "Reintentar",
     chatbot_lead_saved: "Listo, guardé tus datos para Carlos.",
     chatbot_notify_sent: "Listo, Carlos recibió un aviso por WhatsApp.",
+    chatbot_wa_link_label: "Hablar con Carlos por WhatsApp",
+    chatbot_email_link_label: "Escribir a Carlos por email",
 
     // BYOK — Bring Your Own OpenRouter Key
     chatbot_settings_label: "Configurar OpenRouter",
@@ -700,6 +702,8 @@ const translations = {
     chatbot_retry: "Retry",
     chatbot_lead_saved: "Done, I saved your details for Carlos.",
     chatbot_notify_sent: "Done, Carlos received a WhatsApp alert.",
+    chatbot_wa_link_label: "Chat with Carlos on WhatsApp",
+    chatbot_email_link_label: "Email Carlos",
 
     // BYOK — Bring Your Own OpenRouter Key
     chatbot_settings_label: "OpenRouter settings",
