@@ -86,13 +86,6 @@ const inputEl      = document.getElementById("chatbot-input");
 const quickEl      = document.getElementById("chatbot-quick");
 const handoffEl    = document.getElementById("chatbot-handoff");
 const langEl       = document.getElementById("chatbot-lang");
-const settingsBtn  = document.getElementById("chatbot-settings-btn");
-const settingsPanel= document.getElementById("chatbot-settings");
-const connectBtn   = document.getElementById("chatbot-connect-btn");
-const disconnectBtn= document.getElementById("chatbot-disconnect-btn");
-const statusEl     = document.getElementById("chatbot-byok-status");
-const byokInput    = document.getElementById("chatbot-byok-input");
-const byokSaveBtn  = document.getElementById("chatbot-byok-save");
 
 const hasChatbotMarkup = Boolean(fab && panel && formEl);
 if (!hasChatbotMarkup) console.warn("[chatbot] markup missing — widget disabled");
@@ -135,7 +128,6 @@ function getUserKey() {
 function setUserKey(key) {
   if (key) localStorage.setItem(BYOK_KEY, key.trim());
   else     localStorage.removeItem(BYOK_KEY);
-  renderByokStatus();
 }
 
 const state = loadSession();
@@ -218,7 +210,6 @@ async function handleOpenRouterCallback() {
   // Auto-open the chatbot so the user immediately sees "Connected" status
   if (hasChatbotMarkup) {
     open();
-    toggleSettings(true);
     appendMessage("assistant", t("chatbot_byok_connected_welcome"));
   }
   return true;
@@ -504,9 +495,6 @@ async function sendToBot(text) {
   // 2. Server proxy path — Carlos's key lives only in the Netlify/Supabase
   //    function environment. The browser never sees it.
   const serverResult = await callServer(text);
-  if (serverResult.error) {
-    serverResult.reply = `${serverResult.reply}\n\n${t("chatbot_byok_suggest")}`;
-  }
   return serverResult;
 }
 
@@ -551,27 +539,6 @@ function handleToolEvents(events = [], handoffUrl = "") {
 
 function updateLangIndicator() {
   if (langEl) langEl.textContent = currentLang().toUpperCase();
-}
-
-// --- BYOK UI ---------------------------------------------------------
-function renderByokStatus() {
-  const connected = Boolean(getUserKey());
-  if (statusEl) {
-    statusEl.textContent = connected
-      ? t("chatbot_byok_connected")
-      : t("chatbot_byok_not_connected");
-    statusEl.classList.toggle("is-connected", connected);
-  }
-  if (connectBtn)    connectBtn.hidden    = connected;
-  if (disconnectBtn) disconnectBtn.hidden = !connected;
-  if (fab) fab.classList.toggle("chatbot-fab--byok", connected);
-}
-
-function toggleSettings(open) {
-  if (!settingsPanel || !settingsBtn) return;
-  const next = typeof open === "boolean" ? open : settingsPanel.hidden;
-  settingsPanel.hidden = !next;
-  settingsBtn.setAttribute("aria-expanded", String(next));
 }
 
 // --- Send flow -------------------------------------------------------
@@ -661,39 +628,11 @@ function init() {
     if (e.key === "Escape" && !panel.hidden) close();
   });
 
-  // BYOK settings handlers
-  settingsBtn?.addEventListener("click", () => toggleSettings());
-  connectBtn?.addEventListener("click", () => {
-    connectBtn.disabled = true;
-    startOpenRouterAuth().catch((err) => {
-      console.error("[chatbot] OAuth start failed", err);
-      connectBtn.disabled = false;
-      appendMessage("assistant", t("chatbot_byok_oauth_failed"), { error: true });
-    });
-  });
-  disconnectBtn?.addEventListener("click", () => {
-    setUserKey("");
-    appendMessage("assistant", t("chatbot_byok_disconnected"));
-  });
-  byokSaveBtn?.addEventListener("click", () => {
-    const raw = (byokInput?.value || "").trim();
-    if (!/^sk-or-[A-Za-z0-9-]+$/.test(raw)) {
-      appendMessage("assistant", t("chatbot_byok_manual_invalid"), { error: true });
-      byokInput?.focus();
-      return;
-    }
-    setUserKey(raw);
-    if (byokInput) byokInput.value = "";
-    appendMessage("assistant", t("chatbot_byok_connected_welcome"));
-  });
-
   // Pre-render so opening feels instant
   renderHistory();
-  renderByokStatus();
   updateLangIndicator();
   document.addEventListener("languageChanged", () => {
     updateLangIndicator();
-    renderByokStatus();
   });
   if (state.history.length > 0) maybeShowHandoff();
 

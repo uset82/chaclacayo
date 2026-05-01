@@ -379,13 +379,13 @@ img, video {
 }
 
 .value-card__logo {
-  width: 56px;
-  height: 56px;
+  width: 84px;
+  height: 84px;
   object-fit: contain;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.9rem;
   background: white;
-  border-radius: 8px;
-  padding: 4px;
+  border-radius: 12px;
+  padding: 6px;
 }
 
 .value-card:hover {
@@ -907,12 +907,13 @@ img, video {
 }
 
 .upeu-feature__logo {
-  width: 64px;
-  height: 64px;
+  width: 86px;
+  height: 86px;
   border-radius: 12px;
   object-fit: contain;
   background: var(--color-white);
   flex-shrink: 0;
+  padding: 6px;
 }
 
 .upeu-feature__title {

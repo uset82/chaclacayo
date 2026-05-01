@@ -170,7 +170,7 @@
         <h2 class="section-title reveal" data-i18n="value_title">Por qué elegir esta propiedad</h2>
         <div class="value-grid">
           <div class="value-card reveal">
-            <img src="./FOTOS/upeu LOGO.png" alt="Logo UPeU" class="value-card__logo" loading="lazy">
+            <img src="./FOTOS/upeu LOGO.PNG" alt="Logo UPeU" class="value-card__logo" loading="lazy">
             <h3 data-i18n="value_1_title">A 10 min de UPeU</h3>
             <p data-i18n="value_1_desc">Universidad Peruana Unión — comunidad universitaria adventista activa todo el año</p>
           </div>
@@ -349,7 +349,7 @@
           <span class="upeu-feature__badge">🎓 <span data-i18n="upeu_badge">A 10 minutos · ventaja única</span></span>
           
           <div class="upeu-feature__header">
-            <img src="./FOTOS/upeu LOGO.png" alt="Logo UPeU" class="upeu-feature__logo" loading="lazy">
+            <img src="./FOTOS/upeu LOGO.PNG" alt="Logo UPeU" class="upeu-feature__logo" loading="lazy">
             <h3 id="upeu-title" class="upeu-feature__title" data-i18n="upeu_title">Universidad Peruana Unión (UPeU)</h3>
           </div>
           
@@ -835,27 +835,8 @@
         </div>
       </div>
       <span class="chatbot-panel__lang" id="chatbot-lang" aria-live="polite">ES</span>
-      <button class="chatbot-panel__settings" id="chatbot-settings-btn" type="button" aria-expanded="false" aria-controls="chatbot-settings" aria-label="Configurar OpenRouter" data-i18n-aria-label="chatbot_settings_label">⚙</button>
       <button class="chatbot-panel__close" id="chatbot-close" aria-label="Cerrar" data-i18n-aria-label="chatbot_close">✕</button>
     </header>
-
-    <div id="chatbot-settings" class="chatbot-panel__settings-panel" hidden>
-      <p class="chatbot-panel__settings-intro" data-i18n="chatbot_byok_intro">Conecta tu cuenta de OpenRouter para chatear con tu propia clave. Así el asistente responde aunque el servidor de Carlos esté caído.</p>
-      <div class="chatbot-panel__settings-status" id="chatbot-byok-status" data-i18n="chatbot_byok_not_connected">No conectado · usando el servidor</div>
-      <div class="chatbot-panel__settings-actions">
-        <button type="button" class="btn btn--accent chatbot-panel__connect" id="chatbot-connect-btn" data-i18n="chatbot_byok_connect">🔑 Conectar OpenRouter</button>
-        <button type="button" class="btn btn--glass chatbot-panel__disconnect" id="chatbot-disconnect-btn" hidden data-i18n="chatbot_byok_disconnect">Desconectar</button>
-      </div>
-      <details class="chatbot-panel__settings-manual">
-        <summary data-i18n="chatbot_byok_manual_summary">¿Ya tienes una clave? Pégala manualmente</summary>
-        <label for="chatbot-byok-input" class="chatbot-panel__settings-label" data-i18n="chatbot_byok_manual_label">OpenRouter API key (sk-or-v1-...)</label>
-        <div class="chatbot-panel__settings-row">
-          <input id="chatbot-byok-input" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-v1-..." data-i18n-placeholder="chatbot_byok_manual_ph">
-          <button type="button" id="chatbot-byok-save" class="btn btn--small" data-i18n="chatbot_byok_save">Guardar</button>
-        </div>
-      </details>
-      <p class="chatbot-panel__settings-note" data-i18n="chatbot_byok_note">La clave solo se guarda en tu navegador (localStorage) y nunca se envía al servidor de Carlos.</p>
-    </div>
 
     <div class="chatbot-panel__messages" id="chatbot-messages" aria-live="polite"></div>
 
