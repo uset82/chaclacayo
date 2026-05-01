@@ -1,0 +1,16 @@
+# Netlify configuration for Chaclacayo landing page.
+# Static site (no build step) + serverless functions for the chatbot proxy.
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  # Enable native TypeScript support for .mts/.ts function files.
+  node_bundler = "esbuild"
+
+# Required environment variables (configure in Netlify UI):
+#
+#   OPENROUTER_API_KEY  — your OpenRouter secret key (sk-or-...). Server-side only.
+#   OPENROUTER_MODEL    — optional, defaults to openrouter/free (Free Models Router)
+#   ALLOWED_ORIGIN      — optional, comma-separated. Defaults to "*".

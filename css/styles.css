@@ -232,7 +232,11 @@ img, video {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, rgba(10,15,13,0.4) 0%, rgba(10,15,13,0.9) 100%);
+  /* Slim vignette: dark only behind the headline column + bottom CTAs,
+     keep the photo visible everywhere else so the hero feels like a poster. */
+  background:
+    linear-gradient(180deg, rgba(10,15,13,0.55) 0%, rgba(10,15,13,0.25) 38%, rgba(10,15,13,0.75) 100%),
+    radial-gradient(120% 80% at 20% 60%, rgba(10,15,13,0.45) 0%, rgba(10,15,13,0) 60%);
   z-index: -1;
 }
 
@@ -2060,59 +2064,64 @@ input, textarea, select {
     font-size: 1.25rem;
     padding: 0.2rem 0.25rem;
   }
-  /* Hero — iOS safe height + breathing room for FAB */
+  /* Hero — poster-style on mobile: brand → headline → 1 fact → CTAs.
+     Everything redundant (kicker, subline, trust row) is pushed below the fold. */
   .hero {
     min-height: 100vh;
     min-height: 100svh;
     padding-top: calc(54px + env(safe-area-inset-top, 0px));
-    padding-bottom: 6.5rem;
+    padding-bottom: 5rem;
+    align-items: flex-end; /* anchor headline to lower half over the photo */
   }
   .hero__bg {
     animation: none;
     transform: scale(1.05);
   }
   .hero__content {
-    gap: 0.85rem;
+    gap: 1rem;
   }
   .hero__kicker {
-    display: block;
-    max-width: 18rem;
+    display: none; /* redundant with .hero__badge on mobile */
   }
   .hero__badge {
-    font-size: 0.65rem;
-    padding: 0.4rem 0.8rem;
-    letter-spacing: 0.05em;
+    font-size: 0.62rem;
+    padding: 0.3rem 0.7rem;
+    letter-spacing: 0.08em;
     line-height: 1.3;
-    text-align: center;
-    max-width: 100%;
-    white-space: normal;
+    text-align: left;
+    max-width: max-content;
+    white-space: nowrap;
+    background: rgba(212, 168, 67, 0.14);
+    border-color: rgba(212, 168, 67, 0.55);
   }
   .hero__title {
-    font-size: clamp(2.2rem, 11vw, 3rem);
-    line-height: 1.05;
+    font-size: clamp(2.4rem, 12vw, 3.2rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
   }
   .hero__subheadline {
-    font-size: 1.05rem;
-    line-height: 1.4;
+    font-size: 1rem;
+    line-height: 1.45;
+    color: rgba(241, 241, 241, 0.92);
   }
   .hero__subline {
-    font-size: 0.92rem;
+    display: none; /* redundant with .hero__subheadline on mobile */
   }
   .hero__actions {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
   }
   .hero__actions .btn {
     width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
   }
   .hero__trust {
-    flex-direction: column;
-    gap: 0.4rem;
-    font-size: 0.82rem;
-    margin-top: 1rem;
+    display: none; /* repeated in the value section below */
   }
   .hero__scroll-cue {
-    display: none; /* compite con trust badges + FAB en móvil */
+    display: none;
   }
 
   /* Floating WhatsApp — keep clear of safe areas */
@@ -2628,10 +2637,13 @@ input, textarea, select {
 }
 @media (max-width: 480px) {
   .chatbot-fab {
-    bottom: 88px; /* Stack above WhatsApp FAB on small screens */
+    /* Sit at the bottom-left, mirroring the WhatsApp FAB on the right.
+       Frees the lower hero area so it doesn't compete with the CTAs. */
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     left: 16px;
-    padding: 0.7rem 0.9rem;
-    font-size: 0.85rem;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.8rem;
+    gap: 0.4rem;
   }
 }
 

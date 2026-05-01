@@ -1,14 +1,16 @@
 // js/chatbot.js
 // Floating chat widget with two execution paths:
-//   1. BYOK (default when the user has connected their OpenRouter account) —
-//      the browser calls https://openrouter.ai/api/v1/chat/completions DIRECTLY
-//      with the user's personal key (stored only in localStorage).
-//   2. Server fallback — POSTs to the Supabase Edge Function at
-//      APP_CONFIG.CHAT_ENDPOINT which proxies to OpenRouter with Carlos's key.
+//   1. BYOK — when the user has connected their own OpenRouter account, the
+//      browser calls https://openrouter.ai/api/v1/chat/completions DIRECTLY
+//      with the user's personal key (stored only in their localStorage).
+//   2. Server proxy (default) — POSTs to APP_CONFIG.CHAT_ENDPOINT which is
+//      expected to be a server-side function (Netlify Function or Supabase
+//      Edge Function) that holds Carlos's OpenRouter key as a server secret.
+//      The browser NEVER sees Carlos's key.
 //
 // OAuth uses OpenRouter's PKCE flow (docs: https://openrouter.ai/docs/use-cases/oauth-pkce)
-// so any visitor can click "Connect OpenRouter" and chat with their own account
-// without the site ever seeing their credentials server-side.
+// so any visitor can click "Connect OpenRouter" and chat with their own
+// account without the site ever seeing their credentials server-side.
 
 const cfg = window.APP_CONFIG ?? {};
 const ENDPOINT  = cfg.CHAT_ENDPOINT;
@@ -24,13 +26,15 @@ const PKCE_RETURN_URL  = "chaclacayo_openrouter_return";
 const MAX_HISTORY      = 12;
 const HANDOFF_TURN_COUNT = 2;
 const OPENROUTER_URL   = "https://openrouter.ai/api/v1/chat/completions";
-const OPENROUTER_MODEL = "openrouter/free"; // Free tier (limited but no key required by user)
+const OPENROUTER_MODEL = "openrouter/free"; // Free Models Router (auto-selects a free model)
 const OPENROUTER_AUTH  = "https://openrouter.ai/auth";
 const OPENROUTER_EXCHANGE = "https://openrouter.ai/api/v1/auth/keys";
 const BYOK_QUERY_PARAM = "openrouter_code";
 
-// Server-side fallback key (Carlos's OpenRouter key) — used when user hasn't set BYOK
-const SERVER_KEY = "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";
+// Whether CHAT_ENDPOINT is a Supabase Edge Function (it needs the apikey/auth
+// headers) versus a Netlify Function (which doesn't). We detect by URL so the
+// front-end can target either backend without changes.
+const IS_SUPABASE_ENDPOINT = typeof ENDPOINT === "string" && /\.supabase\.co\//.test(ENDPOINT);
 
 // Inline property facts (same ones the Edge Function uses) so BYOK callers
 // don't need a backend round-trip to ground the LLM.
@@ -399,7 +403,9 @@ async function callServer(text) {
       signal: ctrl.signal,
       headers: {
         "Content-Type": "application/json",
-        ...(ANON_KEY ? { "Authorization": `Bearer ${ANON_KEY}`, "apikey": ANON_KEY } : {}),
+        ...(IS_SUPABASE_ENDPOINT && ANON_KEY
+          ? { "Authorization": `Bearer ${ANON_KEY}`, "apikey": ANON_KEY }
+          : {}),
       },
       body: JSON.stringify({
         session_token: state.token,
@@ -442,16 +448,19 @@ async function callServer(text) {
 }
 
 async function sendToBot(text) {
-  const userKey = getUserKey() || SERVER_KEY;
+  // 1. If the user connected their own OpenRouter account (BYOK), try that
+  //    first — direct browser → OpenRouter call, their key, their quota.
+  const userKey = getUserKey();
   if (userKey) {
     const byokResult = await callOpenRouterDirect(text, userKey);
     if (!byokResult.error) return byokResult;
-    if (byokResult.error === "byok_unauthorized") {
-      appendMessage("assistant", t("chatbot_byok_invalid"), { error: true });
-      return { error: "unauthorized", reply: t("chatbot_byok_invalid") };
-    }
-    return byokResult;
+    if (byokResult.error !== "byok_unauthorized") return byokResult;
+    // Their key was rejected — clear it (already done in callOpenRouterDirect)
+    // and silently fall through to the server proxy so the user isn't stuck.
   }
+
+  // 2. Server proxy path — Carlos's key lives only in the Netlify/Supabase
+  //    function environment. The browser never sees it.
   const serverResult = await callServer(text);
   if (serverResult.error) {
     serverResult.reply = `${serverResult.reply}\n\n${t("chatbot_byok_suggest")}`;
