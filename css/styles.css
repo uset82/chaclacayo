@@ -374,6 +374,16 @@ img, video {
   transition: var(--transition);
 }
 
+.value-card__logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  padding: 4px;
+}
+
 .value-card:hover {
   transform: translateY(-5px);
   border-color: rgba(212,168,67,0.3);

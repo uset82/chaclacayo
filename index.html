@@ -170,7 +170,7 @@
         <h2 class="section-title reveal" data-i18n="value_title">Por qué elegir esta propiedad</h2>
         <div class="value-grid">
           <div class="value-card reveal">
-            <div class="value-icon">🎓</div>
+            <img src="./FOTOS/upeu LOGO.png" alt="Logo UPeU" class="value-card__logo" loading="lazy">
             <h3 data-i18n="value_1_title">A 10 min de UPeU</h3>
             <p data-i18n="value_1_desc">Universidad Peruana Unión — comunidad universitaria adventista activa todo el año</p>
           </div>
@@ -349,7 +349,7 @@
           <span class="upeu-feature__badge">🎓 <span data-i18n="upeu_badge">A 10 minutos · ventaja única</span></span>
           
           <div class="upeu-feature__header">
-            <img src="./assets/images/upeu-logo.png" alt="Logo UPeU" class="upeu-feature__logo" loading="lazy">
+            <img src="./FOTOS/upeu LOGO.png" alt="Logo UPeU" class="upeu-feature__logo" loading="lazy">
             <h3 id="upeu-title" class="upeu-feature__title" data-i18n="upeu_title">Universidad Peruana Unión (UPeU)</h3>
           </div>
           
@@ -912,8 +912,9 @@
     window.APP_CONFIG = {
       SUPABASE_URL: "https://jcjygxooykoyhkbuoxex.supabase.co",
       SUPABASE_PUBLISHABLE_KEY: "sb_publishable_enc7sZVW8c07j0N4LBIpIA_mG6tlzje",
-      // Edge Function path on the linked Supabase project
-      CHAT_ENDPOINT: "https://jcjygxooykoyhkbuoxex.supabase.co/functions/v1/chat",
+      // Netlify Function proxy — keeps the OpenRouter key server-side.
+      // Configure OPENROUTER_API_KEY in Netlify → Environment variables.
+      CHAT_ENDPOINT: "/.netlify/functions/chat",
       CARLOS_WA: "4745041112"
     };
   </script>
